@@ -1,31 +1,19 @@
-[![Build Status](https://travis-ci.org/microservices-demo/microservices-demo.svg?branch=master)](https://travis-ci.org/microservices-demo/microservices-demo)
+1. I fork the git master branch to my profile.
 
-# DEPRECATED: Sock Shop : A Microservice Demo Application
+2. I clone the GitHub master branch repository.
 
-The application is the user-facing part of an online shop that sells socks. It is intended to aid the demonstration and testing of microservice and cloud native technologies.
+3.  Step-by-Step Guide
+   Infrastructure as Code with Terraform
+ 
+* Create a new directory for your Terraform files:
+    mkdir aws-infrastructure-setup
+    cd aws-infrastructure-setup
+   
+   ## Step:-1 Setting Up the Kubernetes Cluster
+* Initialize your Terraform project:
+  terraform init
+* Create a main.tf file with the following content to define VPC, subnets, and networking components:
+  ![vpc-subnets-networking](https://github.com/user-attachments/assets/9c0592bb-f85a-425c-a36c-f85b523db33f)
+* Apply the Terraform configuration:
+  terraform apply
 
-It is built using [Spring Boot](http://projects.spring.io/spring-boot/), [Go kit](http://gokit.io) and [Node.js](https://nodejs.org/) and is packaged in Docker containers.
-
-You can read more about the [application design](./internal-docs/design.md).
-
-## Deployment Platforms
-
-The [deploy folder](./deploy/) contains scripts and instructions to provision the application onto your favourite platform. 
-
-Please let us know if there is a platform that you would like to see supported.
-
-## Bugs, Feature Requests and Contributing
-
-We'd love to see community contributions. We like to keep it simple and use Github issues to track bugs and feature requests and pull requests to manage contributions. See the [contribution information](.github/CONTRIBUTING.md) for more information.
-
-## Screenshot
-
-![Sock Shop frontend](https://github.com/microservices-demo/microservices-demo.github.io/raw/master/assets/sockshop-frontend.png)
-
-## Visualizing the application
-
-Use [Weave Scope](http://weave.works/products/weave-scope/) or [Weave Cloud](http://cloud.weave.works/) to visualize the application once it's running in the selected [target platform](./deploy/).
-
-![Sock Shop in Weave Scope](https://github.com/microservices-demo/microservices-demo.github.io/raw/master/assets/sockshop-scope.png)
-
-## 
