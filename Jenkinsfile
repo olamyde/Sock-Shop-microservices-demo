@@ -29,7 +29,8 @@ stage('Build and Tag Docker Images') {
                 script {
                     // Build and tag each image
                     sh 'docker-compose -f $DOCKER_COMPOSE_FILE build'
-                    sh 'docker tag weaveworksdemos/front-end:0.3.12 ${DOCKERHUB_REPO}/front-end:latest'
+                    sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
+                    sh 'docker tag weaveworksdemos/front-end:0.3.12 ${DOCKERHUB_REPO}:front-end'
                     sh 'docker tag weaveworksdemos/edge-router:0.1.1 ${DOCKERHUB_REPO}/edge-router:latest'
                     sh 'docker tag weaveworksdemos/catalogue:0.3.5 ${DOCKERHUB_REPO}/catalogue:latest'
                     sh 'docker tag weaveworksdemos/catalogue-db:0.3.0 ${DOCKERHUB_REPO}/catalogue-db:latest'
