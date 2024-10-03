@@ -2,7 +2,7 @@
 
 2. I clone the GitHub master branch repository.
 
-##3. Step-by-Step Guide
+## 3. Step-by-Step Guide
    Infrastructure as Code with Terraform
  
 * Create a new directory for your Terraform files:
