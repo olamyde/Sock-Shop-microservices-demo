@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = "deploy/docker-compose/docker-compose.yml"
         DOCKERHUB_CREDENTIALS = credentials('del-docker-hub-auth')
-        DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-demo'
+        DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-demo/deploy/'
     }
 
     stages {
