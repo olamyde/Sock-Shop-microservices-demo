@@ -35,6 +35,11 @@
 ![EKS-Cluster](https://github.com/user-attachments/assets/dff33922-6b36-4191-82c9-e50a1f5685ac)
 * Apply the EKS configuration:
   ![terraform-apply](https://github.com/user-attachments/assets/098af2eb-9f09-4749-977d-491235af915b)
+* Kubernetes Cluster created:
+  ![eks-cluster-ready](https://github.com/user-attachments/assets/555d8eaa-664b-4c11-b7ef-9ef43bae94cc)
+
+  
+
   
 
 
