@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        MYSQL_ROOT_PASSWORD = credentials('mysql-root-password')
         DOCKER_COMPOSE_FILE = "deploy/docker-compose/docker-compose.yml"
         DOCKERHUB_CREDENTIALS = credentials('s7deji-dockerhub')
         DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-app/'
