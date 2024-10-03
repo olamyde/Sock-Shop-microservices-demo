@@ -5,7 +5,7 @@
 ## 3. Step-by-Step Guide
    Infrastructure as Code with Terraform
  
-* Create a new directory for Terraform files:
+* Create a new directory for Terraform files
   ![mkdir](https://github.com/user-attachments/assets/62f74f05-f194-4509-8960-abc880abef63) 
    ## Step:-1 Setting Up the Kubernetes Cluster
 * Initialize your Terraform project:
