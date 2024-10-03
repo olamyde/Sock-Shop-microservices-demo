@@ -5,15 +5,17 @@
 ## 3. Step-by-Step Guide
    Infrastructure as Code with Terraform
  
-* Create a new directory for Terraform files
+* Create a new directory for Terraform files:
   ![mkdir](https://github.com/user-attachments/assets/62f74f05-f194-4509-8960-abc880abef63) 
    ## Step:-1 Setting Up the Kubernetes Cluster
 * Initialize your Terraform project:
-  <b>terraform init</b>
+  ![terraform-init](https://github.com/user-attachments/assets/f153d101-a59a-4981-811b-8b552a61b887)
+
 * Create a main.tf file with the following content to define VPC, subnets, and networking components:
   ![vpc-subnets-networking](https://github.com/user-attachments/assets/9c0592bb-f85a-425c-a36c-f85b523db33f)
 * Apply the Terraform configuration:
-  <b>terraform apply</b>
+  ![terraform-apply](https://github.com/user-attachments/assets/c2e930ec-09c6-4570-a5e9-cac608af7019)
+
 * VPC configured in the aws cloud:
   ![vpc-created](https://github.com/user-attachments/assets/7d764783-f388-4a42-9add-1e47db9c508d)
 * Public-subnet and Private-subnet created:
@@ -26,7 +28,8 @@
 * Create a iam.tf file to define IAM roles and policies for EKS, RDS, and other AWS services:
   ![IAM-Roles Policies](https://github.com/user-attachments/assets/1a6c5de0-40bc-4837-ad4c-726894676da2)
 * Apply the IAM role configuration:
-  <b>terraform apply</b>
+  ![terraform-apply](https://github.com/user-attachments/assets/85f2f7a0-1561-4370-8706-dd2edb374d5d)
+
    ## Step 3: Creating an EKS Cluster
 * Add the following to your main.tf to create an EKS cluster with auto-scaling node groups:
 ![EKS-Cluster](https://github.com/user-attachments/assets/dff33922-6b36-4191-82c9-e50a1f5685ac)
