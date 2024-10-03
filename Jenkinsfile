@@ -4,13 +4,13 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = "deploy/docker-compose/docker-compose.yml"
         DOCKERHUB_CREDENTIALS = credentials('del-docker-hub-auth')
-        DOCKERHUB_REPO = 'olamyde/Sock-Shop-microservices-demo'
+        DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-demo'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/olamyde/Sock-Shop-microservices-demo.git'
+                git branch: 'master', url: 'https://github.com/olamyde/sock-shop-microservices-demo.git'
             }
         }
 
