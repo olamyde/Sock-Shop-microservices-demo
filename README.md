@@ -5,9 +5,9 @@
 ## 3. Step-by-Step Guide
    Infrastructure as Code with Terraform
  
-* Create a new directory for your Terraform files:
-    mkdir aws-infrastructure-setup
-    cd aws-infrastructure-setup
+* Create a new directory for Terraform files:
+    <b>mkdir aws-infrastructure-setup</b><pp>
+    <b>cd aws-infrastructure-setup</b>
    
    ## Step:-1 Setting Up the Kubernetes Cluster
 * Initialize your Terraform project:
