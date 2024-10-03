@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/weaveworksdemos/sock-shop-microservices-demo.git'
+                git branch: 'master', url: 'https://github.com/olamyde/Sock-Shop-microservices-demo.git'
             }
         }
 
