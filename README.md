@@ -6,9 +6,7 @@
    Infrastructure as Code with Terraform
  
 * Create a new directory for Terraform files:
-    <b>mkdir aws-infrastructure-setup</b><pp>
-    <b>cd aws-infrastructure-setup</b>
-   
+  ![mkdir](https://github.com/user-attachments/assets/62f74f05-f194-4509-8960-abc880abef63) 
    ## Step:-1 Setting Up the Kubernetes Cluster
 * Initialize your Terraform project:
   <b>terraform init</b>
@@ -31,6 +29,7 @@
   <b>terraform apply</b>
    ## Step 3: Creating an EKS Cluster
 * Add the following to your main.tf to create an EKS cluster with auto-scaling node groups:
+![EKS-Cluster](https://github.com/user-attachments/assets/dff33922-6b36-4191-82c9-e50a1f5685ac)
 
 
 
