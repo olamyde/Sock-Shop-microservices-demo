@@ -5,7 +5,7 @@ pipeline {
         MYSQL_ROOT_PASSWORD = 'my-secret-pw'
         DOCKER_COMPOSE_FILE = "deploy/docker-compose/docker-compose.yml"
         DOCKERHUB_CREDENTIALS = credentials('s7deji-dockerhub')
-        DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-app/'
+        DOCKERHUB_REPO = 'olamyde/sock-shop-microservices-app'
     }
 
     stages {
