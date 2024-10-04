@@ -32,17 +32,17 @@ stage('Build and Tag Docker Images') {
                     sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
                     sh 'docker images'
                     sh 'docker tag weaveworksdemos/front-end:0.3.12 olamyde/sock-shop-microservices-app:front-end'
-                    sh 'docker tag weaveworksdemos/edge-router:0.1.1 ${DOCKERHUB_REPO}/edge-router:latest'
-                    sh 'docker tag weaveworksdemos/catalogue:0.3.5 ${DOCKERHUB_REPO}/catalogue:latest'
-                    sh 'docker tag weaveworksdemos/catalogue-db:0.3.0 ${DOCKERHUB_REPO}/catalogue-db:latest'
-                    sh 'docker tag weaveworksdemos/carts:0.4.8 ${DOCKERHUB_REPO}/carts:latest'
-                    sh 'docker tag weaveworksdemos/orders:0.4.7 ${DOCKERHUB_REPO}/orders:latest'
-                    sh 'docker tag weaveworksdemos/shipping:0.4.8 ${DOCKERHUB_REPO}/shipping:latest'
-                    sh 'docker tag weaveworksdemos/queue-master:0.3.1 ${DOCKERHUB_REPO}/queue-master:latest'
-                    sh 'docker tag weaveworksdemos/payment:0.4.3 ${DOCKERHUB_REPO}/payment:latest'
-                    sh 'docker tag weaveworksdemos/user:0.4.4 ${DOCKERHUB_REPO}/user:latest'
-                    sh 'docker tag weaveworksdemos/user-db:0.4.0 ${DOCKERHUB_REPO}/user-db:latest'
-                    sh 'docker tag weaveworksdemos/load-test:0.1.1 ${DOCKERHUB_REPO}/load-test:latest'
+                    sh 'docker tag weaveworksdemos/edge-router:0.1.1 ${DOCKERHUB_REPO}:edge-router'
+                    sh 'docker tag weaveworksdemos/catalogue:0.3.5 ${DOCKERHUB_REPO}:catalogue'
+                    sh 'docker tag weaveworksdemos/catalogue-db:0.3.0 ${DOCKERHUB_REPO}:catalogue-db'
+                    sh 'docker tag weaveworksdemos/carts:0.4.8 ${DOCKERHUB_REPO}:carts'
+                    sh 'docker tag weaveworksdemos/orders:0.4.7 ${DOCKERHUB_REPO}:orders'
+                    sh 'docker tag weaveworksdemos/shipping:0.4.8 ${DOCKERHUB_REPO}:shipping'
+                    sh 'docker tag weaveworksdemos/queue-master:0.3.1 ${DOCKERHUB_REPO}:queue-master'
+                    sh 'docker tag weaveworksdemos/payment:0.4.3 ${DOCKERHUB_REPO}:payment'
+                    sh 'docker tag weaveworksdemos/user:0.4.4 ${DOCKERHUB_REPO}:user'
+                    sh 'docker tag weaveworksdemos/user-db:0.4.0 ${DOCKERHUB_REPO}:user-db'
+                    sh 'docker tag weaveworksdemos/load-test:0.1.1 ${DOCKERHUB_REPO}:load-test'
                     // Add tagging for other images as needed
                 }
             }
@@ -52,17 +52,17 @@ stage('Build and Tag Docker Images') {
             steps {
                 script {
                     // Push images to DockerHub
-                    sh 'docker push ${DOCKERHUB_REPO}/front-end:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/edge-router:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/catalogue:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/catalogue-db:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/carts:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/orders:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/shipping:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/queue-master:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/payment:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/user:latest'
-                    sh 'docker push ${DOCKERHUB_REPO}/load-test:latest'
+                    sh 'docker push olamyde/sock-shop-microservices-app:front-end'
+                    sh 'docker push ${DOCKERHUB_REPO}:edge-router'
+                    sh 'docker push ${DOCKERHUB_REPO}:catalogue'
+                    sh 'docker push ${DOCKERHUB_REPO}:catalogue-db'
+                    sh 'docker push ${DOCKERHUB_REPO}:carts'
+                    sh 'docker push ${DOCKERHUB_REPO}:orders'
+                    sh 'docker push ${DOCKERHUB_REPO}:shipping'
+                    sh 'docker push ${DOCKERHUB_REPO}:queue-master'
+                    sh 'docker push ${DOCKERHUB_REPO}:payment'
+                    sh 'docker push ${DOCKERHUB_REPO}:user'
+                    sh 'docker push ${DOCKERHUB_REPO}:load-test'
                     // Add push commands for other images as needed
                 }
             }
