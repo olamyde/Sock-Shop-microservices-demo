@@ -11,6 +11,51 @@
     }
   }
 
+   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9411
+    to_port     = 9411
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 30001
+    to_port     = 30001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 30002
+    to_port     = 30002
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 31601
+    to_port     = 31601
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+      tags = {
+      Name = "eks-security-gateway"
+    }
+
   resource "aws_subnet" "public_subnet" {
     vpc_id            = aws_vpc.main_vpc.id
     cidr_block        = "10.0.1.0/24"
@@ -92,15 +137,13 @@
       desired_size = 2
 
     }
-  }
-
-  # Cluster access entry
-  # To add the current caller identity as an administrator
-  enable_cluster_creator_admin_permissions = true
+  
+  iam_role_arn = aws_iam_role.eks_role.arn
 
   tags = {
     Environment = "dev"
     Terraform   = "true"
     Name = "eks_node"
   }
+}
 }
