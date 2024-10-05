@@ -64,89 +64,67 @@ resource "aws_security_group" "k8s-security-group" {
   }
 }
 
-resource "aws_instance" "ci-sockshop-k8s-master" {
-  instance_type   = var.master_instance_type
-  ami             = lookup(var.aws_amis, var.aws_region)
-  key_name        = var.key_name
-  security_groups = [aws_security_group.k8s-security-group.name]
-  
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.30"
+
+  cluster_endpoint_public_access  = true
+
+  cluster_addons = {
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
+  }
+
+  vpc_id                   = "vpc-1234556abcdef"
+  subnet_ids               = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  control_plane_subnet_ids = ["subnet-xyzde987", "subnet-slkjf456", "subnet-qeiru789"]
+
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+  }
+
+  eks_managed_node_groups = {
+    example = {
+      # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = ["m5.xlarge"]
+
+      min_size     = 2
+      max_size     = 10
+      desired_size = 2
+    }
+  }
+
+  # Cluster access entry
+  # To add the current caller identity as an administrator
+  enable_cluster_creator_admin_permissions = true
+
+  access_entries = {
+    # One access entry with a policy associated
+    example = {
+      kubernetes_groups = []
+      principal_arn     = "arn:aws:iam::123456789012:role/something"
+
+      policy_associations = {
+        example = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+      }
+    }
+  }
+
   tags = {
-    Name = "ci-sockshop-k8s-master"
-  }
-
-
- connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = file(var.private_key_path)
-    host        = self.public_ip
-  }
-
-   provisioner "remote-exec" {
-    inline = [
-      # Install Docker
-      "sudo apt-get update -y",
-      "sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common",
-      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
-      "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      "sudo apt-get update -y && sudo apt-get install -y docker.io",
-
-      # Install kubeadm, kubelet, and kubectl
-      "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -",
-      "sudo apt-add-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
-      "sudo apt-get update -y",
-      "sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni",
-
-      # Initialize the Kubernetes master node
-      "sudo kubeadm init --pod-network-cidr=10.244.0.0/16",
-
-      # Set up kubeconfig for the ubuntu user
-      "mkdir -p /home/ubuntu/.kube",
-      "sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config",
-      "sudo chown ubuntu:ubuntu /home/ubuntu/.kube/config",
-
-      # Install a pod network (Flannel in this case)
-      "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
-    ]
+    Environment = "dev"
+    Terraform   = "true"
   }
 }
-
-resource "aws_instance" "ci-sockshop-k8s-node" {
-  instance_type   = var.node_instance_type
-  count           = var.node_count
-  ami             = lookup(var.aws_amis, var.aws_region)
-  key_name        = var.key_name
-  security_groups = [aws_security_group.k8s-security-group.name]
-
-  tags = {
-    Name = "ci-sockshop-k8s-node"
-  }
-
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = file(var.private_key_path)
-    host        = self.public_ip
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      # Install Docker
-      "sudo apt-get update -y",
-      "sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common",
-      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
-      "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      "sudo apt-get update -y && sudo apt-get install -y docker.io",
-
-      # Install kubeadm, kubelet, and kubectl
-      "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -",
-      "sudo apt-add-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
-      "sudo apt-get update -y",
-      "sudo apt-get install -y kubelet kubeadm kubectl",
-      "sudo sysctl -w vm.max_map_count=262144"
-    ]
-  }
-}
-
 
 
