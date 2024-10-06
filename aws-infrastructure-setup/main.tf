@@ -1,154 +1,111 @@
-  provider "aws" {
-    region = "us-west-2"
-  }
-
-  resource "aws_vpc" "main_vpc" {
-    cidr_block = "10.0.0.0/16"
-    enable_dns_support = true
-    enable_dns_hostnames = true
-    tags = {
-      Name = "infrastructure-vpc"
+resource "aws_iam_role" "eks_cluster" {
+  name               = format("%s-%s-%s-control-plane-role", var.tags["id"], var.tags["environment"], var.tags["project"])
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
     }
-  }
-
-resource "aws_security_group" "k8s-security-group" {
-  name        = "eks-security-group"
-  vpc_id      = aws_vpc.main_vpc.id
-
-   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 9411
-    to_port     = 9411
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 30001
-    to_port     = 30001
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 30002
-    to_port     = 30002
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 31601
-    to_port     = 31601
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-      tags = {
-      Name = "eks-security-group"
-    }
+  ]
+}
+POLICY
 }
 
-  resource "aws_subnet" "public_subnet" {
-    vpc_id            = aws_vpc.main_vpc.id
-    cidr_block        = "10.0.1.0/24"
-    map_public_ip_on_launch = true
-    availability_zone = "us-west-2a"
-    tags = {
-      Name = "public-subnet"
-    }
-  }
-
-  resource "aws_subnet" "private_subnet" {
-    vpc_id            = aws_vpc.main_vpc.id
-    cidr_block        = "10.0.2.0/24"
-    availability_zone = "us-west-2b"
-    tags = {
-      Name = "private-subnet"
-    }
-  }
-
-  resource "aws_internet_gateway" "igw" {
-    vpc_id = aws_vpc.main_vpc.id
-    tags = {
-      Name = "main-igw"
-    }
-  }
-
-  resource "aws_route_table" "public_route_table" {
-    vpc_id = aws_vpc.main_vpc.id
-
-    route {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.igw.id
-    }
-
-    tags = {
-      Name = "public-route-table"
-    }
-  }
-
-  resource "aws_route_table_association" "public_subnet_association" {
-    subnet_id      = aws_subnet.public_subnet.id
-    route_table_id = aws_route_table.public_route_table.id
-  }
-
- module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  
-  cluster_name    = "my-cluster"
-  cluster_version = "1.30"
-  cluster_endpoint_public_access  = true
-
-  cluster_addons = {
-    eks-pod-identity-agent = {
-      most_recent = true
-    }
-    coredns = {
-      most_recent = true
-    }
-    kube-proxy = {
-      most_recent = true
-    }
-    vpc-cni = {
-      most_recent = true
-    }
-  }
-
-  vpc_id                   = aws_vpc.main_vpc.id
-  subnet_ids               = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
-  
-
- eks_managed_node_groups = {
-    eks_node = {
-      instance_type = "t3.medium"
-      key_name      = "my-key-pair"
-
-
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2
-
-    }
-  
-  iam_role_arn = aws_iam_role.eks_role.arn
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-    Name = "eks_node"
-  }
+resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_cluster.name
 }
+
+resource "aws_eks_cluster" "eks" {
+  name     = var.cluster_name
+  role_arn = aws_iam_role.eks_cluster.arn
+  version  = var.eks_version
+
+  vpc_config {
+    endpoint_private_access = var.endpoint_private_access
+    endpoint_public_access  = var.endpoint_public_access
+    subnet_ids              = values(var.public_subnets)
+  }
+  depends_on = [
+    aws_iam_role_policy_attachment.amazon_eks_cluster_policy
+  ]
+}
+
+resource "aws_eks_node_group" "green-nodes" {
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = format("%s-%s-%s-green-node-group", var.tags["id"], var.tags["environment"], var.tags["project"])
+  node_role_arn   = aws_iam_role.nodes.arn
+
+  version = var.eks_version
+
+  subnet_ids = values(var.private_subnets)
+
+  capacity_type = var.capacity_type
+  ami_type      = var.ami_type
+
+  instance_types = [var.instance_types]
+  disk_size      = var.disk_size
+
+  remote_access {
+    ec2_ssh_key = var.ec2_ssh_key
+  }
+
+  scaling_config {
+    desired_size = var.green_node_color == "green" && var.green ? var.desired_node : 0
+    min_size     = var.green_node_color == "green" && var.green ? var.node_min : 0
+    max_size     = var.green_node_color == "green" && var.green ? var.node_max : var.node_max
+  }
+
+  labels = {
+    deployment_nodegroup = var.deployment_nodegroup
+  }
+
+  tags = merge(var.tags, {
+    Name                                                  = format("%s-%s-%s-green-node-group", var.tags["id"], var.tags["environment"], var.tags["project"])
+    "k8s.io/cluster-autoscaler/${var.control_plane_name}" = "${var.shared_owned}"
+    "k8s.io/cluster-autoscaler/enabled"                   = "${var.enable_cluster_autoscaler}"
+    },
+  )
+}
+
+resource "aws_eks_node_group" "blue-nodes" {
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = format("%s-%s-%s-blue-node-group", var.tags["id"], var.tags["environment"], var.tags["project"])
+  node_role_arn   = aws_iam_role.nodes.arn
+
+  subnet_ids = values(var.private_subnets)
+
+  version = var.eks_version
+
+  capacity_type = var.capacity_type
+  ami_type      = var.ami_type
+
+  instance_types = [var.instance_types]
+  disk_size      = var.disk_size
+
+  remote_access {
+    ec2_ssh_key = var.ec2_ssh_key
+  }
+
+  scaling_config {
+    desired_size = var.blue_node_color == "blue" && var.blue ? var.desired_node : 0
+    min_size     = var.blue_node_color == "blue" && var.blue ? var.node_min : 0
+    max_size     = var.blue_node_color == "blue" && var.blue ? var.node_max : var.node_max
+  }
+
+  labels = {
+    deployment_nodegroup = var.deployment_nodegroup
+  }
+
+  tags = merge(var.tags, {
+    Name                                                  = format("%s-%s-%s-green-node-group", var.tags["id"], var.tags["environment"], var.tags["project"])
+    "k8s.io/cluster-autoscaler/${var.control_plane_name}" = "${var.shared_owned}"
+    "k8s.io/cluster-autoscaler/enabled"                   = "${var.enable_cluster_autoscaler}"
+    },
+  )
 }
